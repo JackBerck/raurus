@@ -1,18 +1,92 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowDownLeft, ArrowUpRight, Sparkles, ChevronRight, TrendingUp } from 'lucide-react';
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Sparkles,
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  ShoppingBag,
+  Car,
+  Utensils,
+  Receipt,
+  Wallet,
+  Gamepad2,
+  HeartPulse,
+  GraduationCap,
+  CreditCard,
+  Loader2,
+} from 'lucide-react';
 import { TabType } from '../layout/bottom-nav';
+import { useTransactions } from '@/hooks/use-transactions';
+import { formatRupiah, formatTime } from '@/lib/formatters';
+import { Transaction } from '@/types/database';
 
 interface HomeViewProps {
   onNavigateTab: (tab: TabType) => void;
   onOpenAI: () => void;
 }
 
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  'Makanan & Minuman': Utensils,
+  Transportasi: Car,
+  'Belanja Harian': ShoppingBag,
+  'Tagihan & Utilitas': Receipt,
+  Hiburan: Gamepad2,
+  Kesehatan: HeartPulse,
+  Pendidikan: GraduationCap,
+  'Gaji / Upah': Wallet,
+  'Bonus & Freelance': Sparkles,
+  Investasi: TrendingUp,
+};
+
 export function HomeView({ onNavigateTab, onOpenAI }: HomeViewProps) {
   const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
+  const { transactions, isLoading } = useTransactions();
+
+  // Filter transactions according to selected period
+  const filteredTransactions = useMemo(() => {
+    const now = new Date();
+    return transactions.filter((tx) => {
+      const txDate = new Date(tx.occurred_at);
+      if (period === 'today') {
+        return (
+          txDate.getDate() === now.getDate() &&
+          txDate.getMonth() === now.getMonth() &&
+          txDate.getFullYear() === now.getFullYear()
+        );
+      }
+      if (period === 'week') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return txDate >= weekAgo;
+      }
+      if (period === 'month') {
+        return (
+          txDate.getMonth() === now.getMonth() &&
+          txDate.getFullYear() === now.getFullYear()
+        );
+      }
+      return true;
+    });
+  }, [transactions, period]);
+
+  // Aggregate stats
+  const { totalIncome, totalExpense, netBalance } = useMemo(() => {
+    let inc = 0;
+    let exp = 0;
+    for (const tx of filteredTransactions) {
+      const val = Number(tx.total || tx.amount || 0);
+      if (tx.type === 'income') inc += val;
+      else exp += val;
+    }
+    return { totalIncome: inc, totalExpense: exp, netBalance: inc - exp };
+  }, [filteredTransactions]);
+
+  const recentTransactions = transactions.slice(0, 4);
 
   return (
     <div className="flex flex-col gap-4 p-4 animate-in fade-in duration-200">
@@ -44,17 +118,31 @@ export function HomeView({ onNavigateTab, onOpenAI }: HomeViewProps) {
         <CardContent className="p-5 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-xs text-zinc-400 font-medium">Arus Kas Bersih (Net)</span>
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 font-mono">
-              <TrendingUp className="w-3 h-3" /> Stabil
+            <span
+              className={`text-[11px] px-2 py-0.5 rounded-full border flex items-center gap-1 font-mono ${
+                netBalance >= 0
+                  ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                  : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+              }`}
+            >
+              {netBalance >= 0 ? (
+                <>
+                  <TrendingUp className="w-3 h-3" /> Surplus
+                </>
+              ) : (
+                <>
+                  <TrendingDown className="w-3 h-3" /> Defisit
+                </>
+              )}
             </span>
           </div>
 
           <div>
             <h2 className="text-3xl font-extrabold tracking-tight text-white font-mono">
-              Rp 0
+              {formatRupiah(netBalance)}
             </h2>
             <p className="text-[11px] text-zinc-400 mt-0.5">
-              Belum ada transaksi pada periode ini
+              {filteredTransactions.length} transaksi pada periode ini
             </p>
           </div>
 
@@ -66,7 +154,9 @@ export function HomeView({ onNavigateTab, onOpenAI }: HomeViewProps) {
               </div>
               <div className="overflow-hidden">
                 <p className="text-[10px] text-zinc-400">Pemasukan</p>
-                <p className="text-xs font-semibold text-emerald-400 truncate font-mono">Rp 0</p>
+                <p className="text-xs font-semibold text-emerald-400 truncate font-mono">
+                  {formatRupiah(totalIncome)}
+                </p>
               </div>
             </div>
 
@@ -76,7 +166,9 @@ export function HomeView({ onNavigateTab, onOpenAI }: HomeViewProps) {
               </div>
               <div className="overflow-hidden">
                 <p className="text-[10px] text-zinc-400">Pengeluaran</p>
-                <p className="text-xs font-semibold text-rose-400 truncate font-mono">Rp 0</p>
+                <p className="text-xs font-semibold text-rose-400 truncate font-mono">
+                  {formatRupiah(totalExpense)}
+                </p>
               </div>
             </div>
           </div>
@@ -96,10 +188,12 @@ export function HomeView({ onNavigateTab, onOpenAI }: HomeViewProps) {
           <div>
             <p className="text-xs font-bold text-zinc-100 flex items-center gap-1.5">
               Catat Cepat via AI
-              <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Cukup 1 kalimat</span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">
+                1 kalimat bebas
+              </span>
             </p>
             <p className="text-[11px] text-zinc-400 mt-0.5">
-              &quot;Beli kopi 25k pake qris dana&quot;
+              &quot;Beli bensin 25k bayar pake cash&quot;
             </p>
           </div>
         </div>
@@ -110,30 +204,89 @@ export function HomeView({ onNavigateTab, onOpenAI }: HomeViewProps) {
       <div className="flex flex-col gap-2 mt-1">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-semibold text-zinc-300">Transaksi Terbaru</h3>
-          <button
-            type="button"
-            onClick={() => onNavigateTab('aktivitas')}
-            className="text-xs text-emerald-400 hover:text-emerald-300 font-medium"
-          >
-            Lihat semua
-          </button>
+          {transactions.length > 0 && (
+            <button
+              type="button"
+              onClick={() => onNavigateTab('aktivitas')}
+              className="text-xs text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-0.5"
+            >
+              <span>Lihat semua</span>
+              <ChevronRight className="w-3 h-3" />
+            </button>
+          )}
         </div>
 
-        <Card className="glass-card border-emerald-950/80 bg-[#0b130e]">
-          <CardContent className="p-4 text-center text-zinc-400 text-xs py-6 flex flex-col items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-500/60">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <p>Belum ada catatan transaksi</p>
-            <Button
-              size="sm"
-              onClick={onOpenAI}
-              className="bg-emerald-600 hover:bg-emerald-500 text-black font-semibold text-xs mt-1"
-            >
-              Mulai Catat Pertama
-            </Button>
-          </CardContent>
-        </Card>
+        {isLoading ? (
+          <Card className="glass-card border-emerald-950/80 bg-[#0b130e]">
+            <CardContent className="p-8 text-center text-zinc-400 text-xs flex flex-col items-center gap-2">
+              <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
+              <p>Memuat data transaksi...</p>
+            </CardContent>
+          </Card>
+        ) : recentTransactions.length === 0 ? (
+          <Card className="glass-card border-emerald-950/80 bg-[#0b130e]">
+            <CardContent className="p-6 text-center text-zinc-400 text-xs flex flex-col items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-500/60">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <p>Belum ada catatan transaksi</p>
+              <Button
+                size="sm"
+                onClick={onOpenAI}
+                className="bg-emerald-600 hover:bg-emerald-500 text-black font-semibold text-xs mt-1"
+              >
+                Mulai Catat Pertama
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {recentTransactions.map((tx) => {
+              const categoryName = tx.category?.name || 'Lainnya';
+              const Icon = CATEGORY_ICONS[categoryName] || CreditCard;
+              const isIncome = tx.type === 'income';
+
+              return (
+                <div
+                  key={tx.id}
+                  onClick={() => onNavigateTab('aktivitas')}
+                  className="p-3 rounded-2xl bg-[#0d1712] border border-emerald-950/70 hover:border-emerald-500/30 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        isIncome
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-zinc-800/60 text-zinc-300 border border-zinc-700/40'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-zinc-100 line-clamp-1">
+                        {tx.title}
+                      </p>
+                      <p className="text-[10px] text-zinc-400 mt-0.5">
+                        {categoryName} • {tx.provider?.name || 'Cash'} • {formatTime(tx.occurred_at)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <p
+                      className={`text-xs font-bold font-mono ${
+                        isIncome ? 'text-emerald-400' : 'text-zinc-100'
+                      }`}
+                    >
+                      {isIncome ? '+' : '-'}
+                      {formatRupiah(Number(tx.total || tx.amount))}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
