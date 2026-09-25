@@ -34,29 +34,30 @@
 }
 
 :root {
-  /* Default dark emerald/obsidian theme ala Supabase */
-  --background: #080d0a;
-  --foreground: #f0fdf4;
-  --card: #0e1712;
-  --card-foreground: #f0fdf4;
-  --popover: #0e1712;
-  --popover-foreground: #f0fdf4;
-  --primary: #10b981;
-  --primary-foreground: #022c16;
-  --secondary: #14241b;
-  --secondary-foreground: #d1fae5;
-  --muted: #111e17;
-  --muted-foreground: #86a894;
-  --accent: #193124;
-  --accent-foreground: #6ee7b7;
+  /* Slate/White Light Theme */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #059669;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e2e8f0;
+  --accent-foreground: #0f172a;
   --destructive: #ef4444;
-  --border: #182e21;
-  --input: #1a3325;
-  --ring: #10b981;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #059669;
   --radius: 0.75rem;
 }
 
 .dark {
+  /* Supabase Dark Emerald Theme */
   --background: #080d0a;
   --foreground: #f0fdf4;
   --card: #0e1712;
@@ -82,20 +83,36 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-[#050806] text-foreground antialiased selection:bg-emerald-500/30 selection:text-emerald-300;
+    @apply bg-background text-foreground antialiased selection:bg-emerald-500/30 selection:text-emerald-500;
   }
 }
 
 /* Glassmorphism helpers */
 .glass-nav {
-  background: rgba(14, 23, 18, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.dark .glass-nav {
+  background: rgba(12, 22, 17, 0.9);
+  border-top: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+:root:not(.dark) .glass-nav {
+  background: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 .glass-card {
-  background: rgba(14, 23, 18, 0.65);
   backdrop-filter: blur(12px);
+}
+
+.dark .glass-card {
+  background: rgba(14, 23, 18, 0.65);
   border: 1px solid rgba(16, 185, 129, 0.12);
+}
+
+:root:not(.dark) .glass-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
 }

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "sonner";
 
 const poppins = Poppins({
@@ -35,12 +36,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className="dark">
+    <html lang="id" className="dark" suppressHydrationWarning>
       <body
-        className={`${poppins.variable} font-sans antialiased min-h-screen bg-[#050806]`}
+        className={`${poppins.variable} font-sans antialiased min-h-screen bg-background text-foreground`}
       >
-        <QueryProvider>{children}</QueryProvider>
-        <Toaster position="top-center" richColors theme="dark" />
+        <ThemeProvider>
+          <QueryProvider>{children}</QueryProvider>
+          <Toaster position="top-center" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

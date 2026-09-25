@@ -18,13 +18,13 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         aria-label="Bottom Navigation"
         className="w-full max-w-md pointer-events-auto relative px-3 pb-3 pt-1"
       >
-        <div className="glass-nav rounded-3xl px-2 py-2 shadow-2xl flex items-center justify-around relative border border-emerald-500/20 bg-[#0c1611]/90 backdrop-blur-xl">
+        <div className="glass-nav rounded-3xl px-2 py-2 flex items-center justify-around relative border border-emerald-500/20 bg-[#0c1611]/90 dark:bg-[#0c1611]/90 shadow-none">
           {/* 1. Beranda */}
           <button
             type="button"
             onClick={() => onTabChange('beranda')}
             className={cn(
-              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-200 group active:scale-95',
+              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-150 group active:scale-95',
               activeTab === 'beranda'
                 ? 'text-emerald-400 font-medium'
                 : 'text-zinc-400 hover:text-zinc-200'
@@ -46,7 +46,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             type="button"
             onClick={() => onTabChange('aktivitas')}
             className={cn(
-              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-200 group active:scale-95',
+              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-150 group active:scale-95',
               activeTab === 'aktivitas'
                 ? 'text-emerald-400 font-medium'
                 : 'text-zinc-400 hover:text-zinc-200'
@@ -63,33 +63,20 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             <span className="text-[10px] mt-0.5 tracking-tight">Aktivitas</span>
           </button>
 
-          {/* 3. Center Elevated AI Button (Switches to AI Chat view) */}
-          <div className="flex-1 flex justify-center -mt-6">
+          {/* 3. Center Elevated AI Button (Clean minimalist, NO excessive shadow or blurry halo) */}
+          <div className="flex-1 flex justify-center -mt-5">
             <button
               type="button"
               onClick={() => onTabChange('ai')}
               aria-label="Tanya & Catat dengan AI"
-              className="relative group focus:outline-none"
+              className={cn(
+                'w-11 h-11 rounded-full border transition-all duration-150 active:scale-95 flex items-center justify-center shadow-none',
+                activeTab === 'ai'
+                  ? 'bg-emerald-500 text-black border-emerald-400'
+                  : 'bg-[#0f1b14] text-emerald-400 border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/60'
+              )}
             >
-              {/* Outer Glow Halo */}
-              <div
-                className={cn(
-                  'absolute -inset-1 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-full blur-md opacity-75 group-hover:opacity-100 transition duration-300',
-                  activeTab === 'ai' ? 'opacity-100 ring-2 ring-emerald-400' : 'animate-pulse'
-                )}
-              />
-
-              {/* Elevated Floating Button */}
-              <div
-                className={cn(
-                  'relative w-13 h-13 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 p-[2px] shadow-lg shadow-emerald-950/60 active:scale-90 transition-all duration-150',
-                  activeTab === 'ai' && 'scale-105 shadow-emerald-500/50'
-                )}
-              >
-                <div className="w-full h-full rounded-full bg-[#07130c] flex items-center justify-center group-hover:bg-emerald-950/70 transition-colors">
-                  <Sparkles className="w-6 h-6 text-emerald-300 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                </div>
-              </div>
+              <Sparkles className="w-5 h-5" />
             </button>
           </div>
 
@@ -98,7 +85,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             type="button"
             onClick={() => onTabChange('statistik')}
             className={cn(
-              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-200 group active:scale-95',
+              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-150 group active:scale-95',
               activeTab === 'statistik'
                 ? 'text-emerald-400 font-medium'
                 : 'text-zinc-400 hover:text-zinc-200'
@@ -120,7 +107,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             type="button"
             onClick={() => onTabChange('pengaturan')}
             className={cn(
-              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-200 group active:scale-95',
+              'flex flex-col items-center justify-center flex-1 py-1 transition-all duration-150 group active:scale-95',
               activeTab === 'pengaturan'
                 ? 'text-emerald-400 font-medium'
                 : 'text-zinc-400 hover:text-zinc-200'

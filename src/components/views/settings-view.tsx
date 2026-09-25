@@ -14,7 +14,6 @@ import {
 import {
   Tags,
   CreditCard,
-  Palette,
   ShieldCheck,
   Database,
   ChevronRight,
@@ -22,12 +21,15 @@ import {
   Loader2,
   Sparkles,
   CheckCircle2,
-  ExternalLink,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useCategories } from '@/hooks/use-categories';
 import { useProviders } from '@/hooks/use-providers';
+import { useTheme } from '@/components/providers/theme-provider';
 
 export function SettingsView() {
+  const { theme, setTheme } = useTheme();
   const { categories, addCategory, isAdding: isAddingCat } = useCategories();
   const { providers, addProvider, isAdding: isAddingProv } = useProviders();
 
@@ -82,6 +84,47 @@ export function SettingsView() {
 
   return (
     <div className="flex flex-col gap-3 p-4 animate-in fade-in duration-200">
+      {/* 1. Theme Switcher Section */}
+      <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#0d1712] border border-emerald-950/80">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-zinc-100">Tema Tampilan</p>
+            <p className="text-[10px] text-zinc-400 mt-0.5">
+              {theme === 'dark' ? 'Mode Gelap (Emerald)' : 'Mode Terang (Slate)'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center bg-[#07110b] p-1 rounded-xl border border-emerald-950">
+          <button
+            type="button"
+            onClick={() => setTheme('dark')}
+            className={`px-2.5 py-1 text-[10px] font-medium rounded-lg transition-all ${
+              theme === 'dark'
+                ? 'bg-emerald-500 text-black font-bold shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            Dark
+          </button>
+          <button
+            type="button"
+            onClick={() => setTheme('light')}
+            className={`px-2.5 py-1 text-[10px] font-medium rounded-lg transition-all ${
+              theme === 'light'
+                ? 'bg-emerald-500 text-black font-bold shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            Light
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Menu Options */}
       <Card className="glass-card border-emerald-950/80 bg-[#0d1712]">
         <CardContent className="p-0 divide-y divide-emerald-950/60">
           {menuItems.map((item) => {
