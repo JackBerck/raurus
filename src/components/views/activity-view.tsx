@@ -12,13 +12,22 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Search,
   ReceiptText,
   Trash2,
   Calendar,
   CreditCard,
   Tag,
-  Clock,
   Sparkles,
   Loader2,
   Utensils,
@@ -30,7 +39,10 @@ import {
   GraduationCap,
   Wallet,
   TrendingUp,
-  AlertCircle,
+  Pencil,
+  CheckCircle2,
+  ArrowDownLeft,
+  ArrowUpRight,
 } from 'lucide-react';
 import { useTransactions } from '@/hooks/use-transactions';
 import { formatRupiah, formatTime, getDateGroupKey } from '@/lib/formatters';
@@ -50,18 +62,28 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 };
 
 export function ActivityView() {
-  const { transactions, isLoading, deleteTransaction, isDeleting } = useTransactions();
+  const { transactions, isLoading, deleteTransaction, isDeleting, updateTransaction, isUpdating } =
+    useTransactions();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'expense' | 'income'>('all');
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
+  // Edit form state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editAmount, setEditAmount] = useState<number>(0);
+  const [editType, setEditType] = useState<'expense' | 'income'>('expense');
+  const [editCategory, setEditCategory] = useState('');
+  const [editProvider, setEditProvider] = useState('');
+
+  // Delete confirm state
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   // Filtered transactions
   const filtered = useMemo(() => {
     return transactions.filter((tx) => {
-      // Type filter
       if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
 
-      // Search filter
       if (search.trim()) {
         const query = search.toLowerCase();
         const titleMatch = tx.title?.toLowerCase().includes(query);
@@ -92,9 +114,37 @@ export function ActivityView() {
     return groups;
   }, [filtered]);
 
-  const handleDelete = async () => {
+  const handleOpenDetail = (tx: Transaction) => {
+    setSelectedTx(tx);
+    setEditTitle(tx.title);
+    setEditAmount(Number(tx.total || tx.amount));
+    setEditType(tx.type);
+    setEditCategory(tx.category?.name || 'Lainnya');
+    setEditProvider(tx.provider?.name || 'Cash');
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedTx || !editTitle.trim() || editAmount <= 0) return;
+    await updateTransaction({
+      id: selectedTx.id,
+      data: {
+        title: editTitle.trim(),
+        amount: editAmount,
+        total: editAmount,
+        type: editType,
+        category: editCategory.trim(),
+        provider: editProvider.trim(),
+      },
+    });
+    setIsEditing(false);
+    setSelectedTx(null);
+  };
+
+  const handleDeleteConfirmed = async () => {
     if (!selectedTx) return;
     await deleteTransaction(selectedTx.id);
+    setConfirmDelete(false);
     setSelectedTx(null);
   };
 
@@ -191,7 +241,7 @@ export function ActivityView() {
                   return (
                     <div
                       key={tx.id}
-                      onClick={() => setSelectedTx(tx)}
+                      onClick={() => handleOpenDetail(tx)}
                       className="p-3 rounded-2xl bg-[#0d1712] border border-emerald-950/70 hover:border-emerald-500/30 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]"
                     >
                       <div className="flex items-center gap-3">
@@ -233,35 +283,41 @@ export function ActivityView() {
         </div>
       )}
 
-      {/* 4. Transaction Detail Dialog */}
+      {/* 4. Transaction Detail & Edit Modal Dialog */}
       <Dialog open={!!selectedTx} onOpenChange={(open) => !open && setSelectedTx(null)}>
         <DialogContent className="bg-[#09110d] border border-emerald-500/30 text-zinc-100 rounded-3xl max-w-sm mx-auto p-5 focus:outline-none">
           <DialogHeader className="text-left space-y-1">
             <div className="flex items-center justify-between">
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${
-                  selectedTx?.type === 'income'
+                  (isEditing ? editType : selectedTx?.type) === 'income'
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                     : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                 }`}
               >
-                {selectedTx?.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}
+                {(isEditing ? editType : selectedTx?.type) === 'income' ? 'Pemasukan' : 'Pengeluaran'}
               </span>
-              <span className="text-[11px] text-zinc-500 font-mono">
-                {selectedTx ? formatTime(selectedTx.occurred_at) : ''}
-              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditing(!isEditing)}
+                className="text-xs text-emerald-400 hover:text-emerald-300 h-7 px-2"
+              >
+                <Pencil className="w-3.5 h-3.5 mr-1" />
+                {isEditing ? 'Batal Edit' : 'Edit'}
+              </Button>
             </div>
             <DialogTitle className="text-base font-bold text-white mt-1">
-              {selectedTx?.title}
+              {isEditing ? 'Edit Transaksi' : selectedTx?.title}
             </DialogTitle>
             <DialogDescription className="text-xs text-zinc-400">
-              Rincian transaksi keuangan
+              {isEditing ? 'Sesuaikan rincian transaksi' : 'Rincian transaksi keuangan'}
             </DialogDescription>
           </DialogHeader>
 
-          {selectedTx && (
+          {selectedTx && !isEditing ? (
+            /* VIEW MODE */
             <div className="flex flex-col gap-3 mt-2">
-              {/* Amount Showcase */}
               <div className="p-3.5 rounded-2xl bg-[#0f1b14] border border-emerald-950 flex flex-col items-center justify-center">
                 <span className="text-[10px] text-zinc-400">Nominal Total</span>
                 <span
@@ -274,7 +330,6 @@ export function ActivityView() {
                 </span>
               </div>
 
-              {/* Metadata details */}
               <div className="divide-y divide-emerald-950/60 text-xs">
                 <div className="py-2 flex items-center justify-between">
                   <span className="text-zinc-400 flex items-center gap-1.5">
@@ -317,24 +372,146 @@ export function ActivityView() {
                 )}
               </div>
 
-              {/* Delete action */}
-              <Button
-                variant="destructive"
-                disabled={isDeleting}
-                onClick={handleDelete}
-                className="w-full mt-2 bg-rose-950/60 hover:bg-rose-900 border border-rose-500/30 text-rose-300 font-medium text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
+              {/* Actions row */}
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditing(true)}
+                  className="bg-[#0f1b14] border-emerald-950 hover:bg-emerald-950/40 text-emerald-300 text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>Edit Data</span>
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  onClick={() => setConfirmDelete(true)}
+                  className="bg-rose-950/60 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
+                >
                   <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus</span>
+                </Button>
+              </div>
+            </div>
+          ) : selectedTx && isEditing ? (
+            /* EDIT MODE */
+            <div className="flex flex-col gap-3 mt-2 animate-in fade-in duration-150">
+              {/* Type Switcher */}
+              <div className="grid grid-cols-2 gap-2 bg-[#0d1712] p-1 rounded-xl border border-emerald-950">
+                <button
+                  type="button"
+                  onClick={() => setEditType('expense')}
+                  className={`py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${
+                    editType === 'expense'
+                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                      : 'text-zinc-400'
+                  }`}
+                >
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  Pengeluaran
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditType('income')}
+                  className={`py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${
+                    editType === 'income'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      : 'text-zinc-400'
+                  }`}
+                >
+                  <ArrowDownLeft className="w-3.5 h-3.5" />
+                  Pemasukan
+                </button>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-zinc-400 font-medium">Judul Transaksi</label>
+                <Input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl"
+                />
+              </div>
+
+              {/* Amount */}
+              <div className="space-y-1">
+                <label className="text-[11px] text-zinc-400 font-medium">Nominal (Rp)</label>
+                <Input
+                  type="number"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(parseFloat(e.target.value) || 0)}
+                  className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl font-mono"
+                />
+              </div>
+
+              {/* Category & Provider */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[11px] text-zinc-400 font-medium">Kategori</label>
+                  <Input
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] text-zinc-400 font-medium">Metode / Akun</label>
+                  <Input
+                    value={editProvider}
+                    onChange={(e) => setEditProvider(e.target.value)}
+                    className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl"
+                  />
+                </div>
+              </div>
+
+              {/* Save changes */}
+              <Button
+                disabled={isUpdating || !editTitle.trim() || editAmount <= 0}
+                onClick={handleSaveEdit}
+                className="w-full mt-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs h-10 rounded-xl flex items-center justify-center gap-1.5"
+              >
+                {isUpdating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4" />
                 )}
-                <span>Hapus Transaksi Ini</span>
+                <span>Simpan Perubahan</span>
               </Button>
             </div>
-          )}
+          ) : null}
         </DialogContent>
       </Dialog>
+
+      {/* 5. Alert Dialog Confirmation for Deletion */}
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent className="bg-[#09110d] border border-rose-500/30 text-zinc-100 rounded-3xl max-w-xs mx-auto p-5">
+          <AlertDialogHeader className="text-left space-y-1">
+            <AlertDialogTitle className="text-sm font-bold text-white">
+              Hapus Transaksi?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-zinc-400">
+              Apakah Anda yakin ingin menghapus catatan &quot;{selectedTx?.title}&quot;? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2 mt-3 sm:justify-end">
+            <AlertDialogCancel
+              disabled={isDeleting}
+              onClick={() => setConfirmDelete(false)}
+              className="bg-[#0f1b14] border-emerald-950 text-xs text-zinc-300 h-9 rounded-xl hover:bg-emerald-950/30"
+            >
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isDeleting}
+              onClick={handleDeleteConfirmed}
+              className="bg-rose-600 hover:bg-rose-500 text-white text-xs h-9 rounded-xl"
+            >
+              {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Ya, Hapus'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

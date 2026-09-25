@@ -4,15 +4,14 @@ import React from 'react';
 import { Home, ReceiptText, Sparkles, BarChart3, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type TabType = 'beranda' | 'aktivitas' | 'statistik' | 'pengaturan';
+export type TabType = 'beranda' | 'aktivitas' | 'ai' | 'statistik' | 'pengaturan';
 
 interface BottomNavProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
-  onOpenAI: () => void;
 }
 
-export function BottomNav({ activeTab, onTabChange, onOpenAI }: BottomNavProps) {
+export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none pb-safe">
       <nav
@@ -64,19 +63,29 @@ export function BottomNav({ activeTab, onTabChange, onOpenAI }: BottomNavProps) 
             <span className="text-[10px] mt-0.5 tracking-tight">Aktivitas</span>
           </button>
 
-          {/* 3. Center Elevated AI Button */}
+          {/* 3. Center Elevated AI Button (Switches to AI Chat view) */}
           <div className="flex-1 flex justify-center -mt-6">
             <button
               type="button"
-              onClick={onOpenAI}
-              aria-label="Catat Transaksi dengan AI"
+              onClick={() => onTabChange('ai')}
+              aria-label="Tanya & Catat dengan AI"
               className="relative group focus:outline-none"
             >
               {/* Outer Glow Halo */}
-              <div className="absolute -inset-1 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-full blur-md opacity-75 group-hover:opacity-100 transition duration-300 animate-pulse" />
+              <div
+                className={cn(
+                  'absolute -inset-1 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-full blur-md opacity-75 group-hover:opacity-100 transition duration-300',
+                  activeTab === 'ai' ? 'opacity-100 ring-2 ring-emerald-400' : 'animate-pulse'
+                )}
+              />
 
               {/* Elevated Floating Button */}
-              <div className="relative w-13 h-13 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 p-[2px] shadow-lg shadow-emerald-950/60 active:scale-90 transition-transform duration-150">
+              <div
+                className={cn(
+                  'relative w-13 h-13 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 p-[2px] shadow-lg shadow-emerald-950/60 active:scale-90 transition-all duration-150',
+                  activeTab === 'ai' && 'scale-105 shadow-emerald-500/50'
+                )}
+              >
                 <div className="w-full h-full rounded-full bg-[#07130c] flex items-center justify-center group-hover:bg-emerald-950/70 transition-colors">
                   <Sparkles className="w-6 h-6 text-emerald-300 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                 </div>

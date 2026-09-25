@@ -8,15 +8,14 @@ import { HomeView } from '@/components/views/home-view';
 import { ActivityView } from '@/components/views/activity-view';
 import { StatsView } from '@/components/views/stats-view';
 import { SettingsView } from '@/components/views/settings-view';
-import { AIInputSheet } from '@/components/views/ai-input-sheet';
+import { AIChatView } from '@/components/views/ai-chat-view';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('beranda');
-  const [isAIOpen, setIsAIOpen] = useState(false);
 
   return (
     <MobileShell>
-      {/* 1. Header Sticky */}
+      {/* 1. Header Sticky with clean logo without bg */}
       <Header activeTab={activeTab} />
 
       {/* 2. Main Content View Area */}
@@ -24,25 +23,19 @@ export default function App() {
         {activeTab === 'beranda' && (
           <HomeView
             onNavigateTab={(tab) => setActiveTab(tab)}
-            onOpenAI={() => setIsAIOpen(true)}
+            onOpenAI={() => setActiveTab('ai')}
           />
         )}
         {activeTab === 'aktivitas' && <ActivityView />}
+        {activeTab === 'ai' && <AIChatView />}
         {activeTab === 'statistik' && <StatsView />}
         {activeTab === 'pengaturan' && <SettingsView />}
       </main>
 
-      {/* 3. Bottom Navigation (5 Slots with Elevated AI Button) */}
+      {/* 3. Bottom Navigation (5 Slots with Elevated AI Button switching to AI tab) */}
       <BottomNav
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab)}
-        onOpenAI={() => setIsAIOpen(true)}
-      />
-
-      {/* 4. AI Input Trigger Sheet */}
-      <AIInputSheet
-        open={isAIOpen}
-        onOpenChange={(open) => setIsAIOpen(open)}
       />
     </MobileShell>
   );

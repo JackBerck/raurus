@@ -40,10 +40,12 @@ const DEFAULT_PROVIDERS = [
   'Lainnya',
 ];
 
-const FALLBACK_MODELS = [
+// Prioritize fast, high-availability free models first with short timeout
+const FAST_MODELS = [
   'google/gemma-4-26b-a4b-it:free',
-  'google/gemma-4-31b-it:free',
   'qwen/qwen3.8-27b:free',
+  'liquid/lfm-2.5-2.6b:free',
+  'google/gemma-4-31b-it:free',
   'nvidia/nemotron-3.5-lightning:free',
   'z-ai/glm-5.2:free',
 ];
@@ -99,16 +101,7 @@ Waktu sekarang: ${currentDate}`;
 
   let lastError: Error | null = null;
 
-  // Prioritize active model from env or loop through fallback models
-  const models = [
-    ...(process.env.OPENROUTER_MODEL ? [process.env.OPENROUTER_MODEL] : []),
-    ...FALLBACK_MODELS,
-  ];
-
-  // Remove duplicates
-  const uniqueModels = Array.from(new Set(models));
-
-  for (const model of uniqueModels) {
+  for (const model of FAST_MODELS) {
     try {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -126,6 +119,7 @@ Waktu sekarang: ${currentDate}`;
           ],
           temperature: 0.1,
         }),
+        signal: AbortSignal.timeout(8000), // Max 8s per model
       });
 
       if (!response.ok) {
@@ -158,5 +152,5 @@ Waktu sekarang: ${currentDate}`;
     }
   }
 
-  throw lastError || new Error('Gagal memproses transaksi dengan semua model AI');
+  throw lastError || new Error('Gagal memproses transaksi dengan AI. Silakan coba kembali.');
 }
