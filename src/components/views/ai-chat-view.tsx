@@ -145,9 +145,9 @@ export function AIChatView() {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden select-none">
+    <div className="flex flex-col h-full w-full min-h-0 overflow-hidden select-none">
       {/* 1. Chat Message Feed (ONLY THIS SCROLLS) */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3.5">
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3 space-y-3.5">
         {messages.map((msg) => {
           const isUser = msg.role === 'user';
           return (
@@ -240,7 +240,7 @@ export function AIChatView() {
                         size="sm"
                         disabled={savingId === msg.id}
                         onClick={() => handleSaveTransaction(msg.id, msg.transaction!)}
-                        className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs h-8 rounded-xl shadow-md flex items-center justify-center gap-1.5"
+                        className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs h-8 rounded-xl shadow-none flex items-center justify-center gap-1.5"
                       >
                         {savingId === msg.id ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -257,7 +257,7 @@ export function AIChatView() {
           );
         })}
 
-        {/* Elegant Pulsing Dots Loader (No Spinning Star) */}
+        {/* Elegant Pulsing Dots Loader */}
         {isLoading && (
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-emerald-400">
@@ -275,8 +275,8 @@ export function AIChatView() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 2. Quick Prompt Chips (Fixed Above Input) */}
-      <div className="shrink-0 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-emerald-950/50 bg-[#080d0a]/90 backdrop-blur-sm">
+      {/* 2. Quick Prompt Chips (STRICTLY RIGID / STATIC, NEVER SCROLLS WITH CHAT) */}
+      <div className="shrink-0 static z-10 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-emerald-950/50 bg-[#080d0a]/95 backdrop-blur-md">
         {QUICK_CHIPS.map((chip, idx) => (
           <button
             key={idx}
@@ -290,8 +290,8 @@ export function AIChatView() {
         ))}
       </div>
 
-      {/* 3. Sticky Bottom Input Bar */}
-      <div className="shrink-0 p-3 bg-[#09110d] border-t border-emerald-950/80">
+      {/* 3. Bottom Input Bar (STRICTLY RIGID / STATIC, NEVER SCROLLS WITH CHAT) */}
+      <div className="shrink-0 static z-10 p-3 bg-[#09110d] border-t border-emerald-950/80">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -309,7 +309,7 @@ export function AIChatView() {
           <Button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black p-0 shrink-0 flex items-center justify-center shadow-md shadow-emerald-950"
+            className="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black p-0 shrink-0 flex items-center justify-center shadow-none"
           >
             <Send className="w-4 h-4" />
           </Button>
