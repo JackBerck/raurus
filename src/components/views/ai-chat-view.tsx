@@ -10,14 +10,13 @@ import {
   CheckCircle2,
   ArrowUpRight,
   ArrowDownLeft,
-  Bot,
   User,
-  RotateCcw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { ParsedTransaction } from '@/lib/ai/parser';
 import { formatRupiah } from '@/lib/formatters';
+import { FormattedMessage } from '@/components/ui/formatted-message';
 
 interface ChatMessage {
   id: string;
@@ -41,7 +40,7 @@ export function AIChatView() {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Halo! Saya asisten pintar RaUrus. Anda bisa langsung mencatat transaksi (misal: "beli kopi 20rb pake dana") atau bertanya seputar keuangan Anda (misal: "berapa pengeluaran hari ini?").',
+        'Halo! Saya asisten finansial RaUrus.\n\nAnda bisa langsung mencatat transaksi (contoh: **"beli bensin 25k cash"**) atau bertanya riwayat keuangan (contoh: **"berapa pengeluaran hari ini?"**).',
     },
   ]);
   const [input, setInput] = useState('');
@@ -146,9 +145,9 @@ export function AIChatView() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] animate-in fade-in duration-200">
-      {/* 1. Chat Message Feed */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex flex-col h-full overflow-hidden select-none">
+      {/* 1. Chat Message Feed (ONLY THIS SCROLLS) */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3.5">
         {messages.map((msg) => {
           const isUser = msg.role === 'user';
           return (
@@ -175,10 +174,14 @@ export function AIChatView() {
                   className={`p-3 rounded-2xl text-xs leading-relaxed ${
                     isUser
                       ? 'bg-emerald-600 text-white rounded-tr-none'
-                      : 'bg-[#0e1913] text-zinc-200 border border-emerald-950/80 rounded-tl-none'
+                      : 'bg-[#0e1913] text-zinc-200 border border-emerald-950/80 rounded-tl-none shadow-sm'
                   }`}
                 >
-                  <p className="whitespace-pre-line">{msg.content}</p>
+                  {isUser ? (
+                    <p className="whitespace-pre-line">{msg.content}</p>
+                  ) : (
+                    <FormattedMessage content={msg.content} />
+                  )}
                 </div>
 
                 {/* Interactive Transaction Confirmation Card inside chat */}
@@ -254,18 +257,26 @@ export function AIChatView() {
           );
         })}
 
+        {/* Elegant Pulsing Dots Loader (No Spinning Star) */}
         {isLoading && (
-          <div className="flex items-center gap-2 text-zinc-400 text-xs pl-2">
-            <Sparkles className="w-4 h-4 text-emerald-400 animate-spin" />
-            <span className="italic">AI sedang menganalisis...</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-emerald-400">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-[#0e1913] border border-emerald-950/80 rounded-tl-none">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" />
+              <span className="text-[11px] text-zinc-400 ml-1.5">Menjawab...</span>
+            </div>
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 2. Quick Prompt Chips */}
-      <div className="px-3 py-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-emerald-950/40 bg-[#080d0a]">
+      {/* 2. Quick Prompt Chips (Fixed Above Input) */}
+      <div className="shrink-0 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-emerald-950/50 bg-[#080d0a]/90 backdrop-blur-sm">
         {QUICK_CHIPS.map((chip, idx) => (
           <button
             key={idx}
@@ -279,8 +290,8 @@ export function AIChatView() {
         ))}
       </div>
 
-      {/* 3. Sticky Input Bar */}
-      <div className="p-3 bg-[#09110d] border-t border-emerald-950/80">
+      {/* 3. Sticky Bottom Input Bar */}
+      <div className="shrink-0 p-3 bg-[#09110d] border-t border-emerald-950/80">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -292,19 +303,15 @@ export function AIChatView() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isLoading}
-            placeholder="Ketik catatan atau tanya AI..."
-            className="flex-1 bg-[#101c15] border border-emerald-950/80 rounded-2xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
+            placeholder="Tanya pengeluaran atau catat kilat..."
+            className="flex-1 bg-[#101c15] border border-emerald-950/80 rounded-2xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
           />
           <Button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-10 h-10 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black p-0 shrink-0 flex items-center justify-center shadow-md shadow-emerald-950"
+            className="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black p-0 shrink-0 flex items-center justify-center shadow-md shadow-emerald-950"
           >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
+            <Send className="w-4 h-4" />
           </Button>
         </form>
       </div>

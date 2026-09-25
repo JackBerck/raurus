@@ -15,24 +15,46 @@ export default function App() {
 
   return (
     <MobileShell>
-      {/* 1. Header Sticky with clean logo without bg */}
+      {/* 1. Header Sticky */}
       <Header activeTab={activeTab} />
 
       {/* 2. Main Content View Area */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-hidden relative flex flex-col">
         {activeTab === 'beranda' && (
-          <HomeView
-            onNavigateTab={(tab) => setActiveTab(tab)}
-            onOpenAI={() => setActiveTab('ai')}
-          />
+          <div className="flex-1 overflow-y-auto pb-24">
+            <HomeView
+              onNavigateTab={(tab) => setActiveTab(tab)}
+              onOpenAI={() => setActiveTab('ai')}
+            />
+          </div>
         )}
-        {activeTab === 'aktivitas' && <ActivityView />}
-        {activeTab === 'ai' && <AIChatView />}
-        {activeTab === 'statistik' && <StatsView />}
-        {activeTab === 'pengaturan' && <SettingsView />}
+
+        {activeTab === 'aktivitas' && (
+          <div className="flex-1 overflow-y-auto pb-24">
+            <ActivityView />
+          </div>
+        )}
+
+        {activeTab === 'ai' && (
+          <div className="flex-1 overflow-hidden pb-20 flex flex-col">
+            <AIChatView />
+          </div>
+        )}
+
+        {activeTab === 'statistik' && (
+          <div className="flex-1 overflow-y-auto pb-24">
+            <StatsView />
+          </div>
+        )}
+
+        {activeTab === 'pengaturan' && (
+          <div className="flex-1 overflow-y-auto pb-24">
+            <SettingsView />
+          </div>
+        )}
       </main>
 
-      {/* 3. Bottom Navigation (5 Slots with Elevated AI Button switching to AI tab) */}
+      {/* 3. Bottom Navigation */}
       <BottomNav
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab)}
