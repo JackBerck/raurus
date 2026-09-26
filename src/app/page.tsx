@@ -18,10 +18,10 @@ export default function App() {
       {/* 1. Header Sticky */}
       <Header activeTab={activeTab} />
 
-      {/* 2. Main Content View Area (min-h-0 prevents flex children from expanding container) */}
+      {/* 2. Main Content View Area */}
       <main className="flex-1 min-h-0 overflow-hidden relative flex flex-col">
         {activeTab === 'beranda' && (
-          <div className="flex-1 min-h-0 overflow-y-auto pb-24">
+          <div className="flex-1 min-h-0 overflow-y-auto pb-4">
             <HomeView
               onNavigateTab={(tab) => setActiveTab(tab)}
               onOpenAI={() => setActiveTab('ai')}
@@ -30,25 +30,25 @@ export default function App() {
         )}
 
         {activeTab === 'aktivitas' && (
-          <div className="flex-1 min-h-0 overflow-y-auto pb-24">
+          <div className="flex-1 min-h-0 overflow-y-auto pb-4">
             <ActivityView />
           </div>
         )}
 
         {activeTab === 'ai' && (
-          <div className="flex-1 min-h-0 overflow-hidden pb-20 flex flex-col">
+          <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
             <AIChatView />
           </div>
         )}
 
         {activeTab === 'statistik' && (
-          <div className="flex-1 min-h-0 overflow-y-auto pb-24">
+          <div className="flex-1 min-h-0 overflow-y-auto pb-4">
             <StatsView />
           </div>
         )}
 
         {activeTab === 'pengaturan' && (
-          <div className="flex-1 min-h-0 overflow-y-auto pb-24">
+          <div className="flex-1 min-h-0 overflow-y-auto pb-4">
             <SettingsView />
           </div>
         )}

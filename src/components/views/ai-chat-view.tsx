@@ -47,10 +47,13 @@ export function AIChatView() {
   const [isLoading, setIsLoading] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Scroll ONLY the inner container directly without touching window/parent viewports
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   }, [messages, isLoading]);
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -147,7 +150,10 @@ export function AIChatView() {
   return (
     <div className="flex flex-col h-full w-full min-h-0 overflow-hidden select-none">
       {/* 1. Chat Message Feed (ONLY THIS SCROLLS) */}
-      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3 space-y-3.5">
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3 space-y-3.5"
+      >
         {messages.map((msg) => {
           const isUser = msg.role === 'user';
           return (
@@ -271,12 +277,10 @@ export function AIChatView() {
             </div>
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
-      {/* 2. Quick Prompt Chips (STRICTLY RIGID / STATIC, NEVER SCROLLS WITH CHAT) */}
-      <div className="shrink-0 static z-10 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-emerald-950/50 bg-[#080d0a]/95 backdrop-blur-md">
+      {/* 2. Quick Prompt Chips (STRICTLY PINNED ABOVE INPUT) */}
+      <div className="shrink-0 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-border/80 dark:border-emerald-950/50 bg-background/95 backdrop-blur-md">
         {QUICK_CHIPS.map((chip, idx) => (
           <button
             key={idx}
@@ -290,8 +294,8 @@ export function AIChatView() {
         ))}
       </div>
 
-      {/* 3. Bottom Input Bar (STRICTLY RIGID / STATIC, NEVER SCROLLS WITH CHAT) */}
-      <div className="shrink-0 static z-10 p-3 bg-[#09110d] border-t border-emerald-950/80">
+      {/* 3. Bottom Input Bar (STRICTLY PINNED ABOVE BOTTOM NAV) */}
+      <div className="shrink-0 p-2.5 bg-background border-t border-border/80 dark:border-emerald-950/80">
         <form
           onSubmit={(e) => {
             e.preventDefault();
