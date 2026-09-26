@@ -16,12 +16,9 @@ import {
 import {
   BarChart3,
   PieChart as PieIcon,
-  TrendingDown,
-  TrendingUp,
   Flame,
   Calendar,
   Loader2,
-  Sparkles,
 } from 'lucide-react';
 import { useTransactions } from '@/hooks/use-transactions';
 import { formatRupiah } from '@/lib/formatters';
@@ -61,14 +58,6 @@ export function StatsView() {
   const totalExpense = useMemo(
     () => expenses.reduce((acc, curr) => acc + Number(curr.total || curr.amount || 0), 0),
     [expenses]
-  );
-
-  const totalIncome = useMemo(
-    () =>
-      activeTransactions
-        .filter((tx) => tx.type === 'income')
-        .reduce((acc, curr) => acc + Number(curr.total || curr.amount || 0), 0),
-    [activeTransactions]
   );
 
   // Category breakdown for Pie Chart
@@ -130,8 +119,8 @@ export function StatsView() {
 
   if (isLoading) {
     return (
-      <div className="p-8 text-center text-zinc-400 text-xs flex flex-col items-center gap-2">
-        <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
+      <div className="p-8 text-center text-muted-foreground text-xs flex flex-col items-center gap-2">
+        <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
         <p>Menghitung analisis statistik...</p>
       </div>
     );
@@ -140,13 +129,13 @@ export function StatsView() {
   if (activeTransactions.length === 0) {
     return (
       <div className="flex flex-col gap-4 p-4 animate-in fade-in duration-200">
-        <Card className="glass-card border-emerald-950/80 bg-[#0b130e]">
-          <CardContent className="p-8 text-center text-zinc-400 text-xs flex flex-col items-center gap-2.5">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+        <Card className="glass-card border-border/80 dark:border-emerald-950/80 bg-card dark:bg-[#0b130e]">
+          <CardContent className="p-8 text-center text-muted-foreground text-xs flex flex-col items-center gap-2.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <BarChart3 className="w-6 h-6" />
             </div>
-            <p className="font-medium text-zinc-200">Belum Ada Data Statistik</p>
-            <p className="text-zinc-500 max-w-[240px]">
+            <p className="font-medium text-foreground">Belum Ada Data Statistik</p>
+            <p className="text-muted-foreground max-w-[240px]">
               Grafik pengeluaran dan analisis kategori akan otomatis terhitung saat Anda mencatat transaksi.
             </p>
           </CardContent>
@@ -158,14 +147,14 @@ export function StatsView() {
   return (
     <div className="flex flex-col gap-4 p-4 animate-in fade-in duration-200 pb-6">
       {/* 1. Period Selector */}
-      <div className="flex bg-[#0e1712] p-1 rounded-2xl border border-emerald-950/60">
+      <div className="flex bg-secondary/80 dark:bg-[#0e1712] p-1 rounded-2xl border border-border/80 dark:border-emerald-950/60">
         <button
           type="button"
           onClick={() => setPeriodFilter('month')}
           className={`flex-1 py-1.5 text-xs font-medium rounded-xl transition-all ${
             periodFilter === 'month'
-              ? 'bg-emerald-500/20 text-emerald-300 shadow-sm border border-emerald-500/30'
-              : 'text-zinc-400 hover:text-zinc-200'
+              ? 'bg-card text-emerald-600 dark:text-emerald-300 dark:bg-emerald-500/20 shadow-sm border border-border/80 dark:border-emerald-500/30'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           Bulan Ini
@@ -175,8 +164,8 @@ export function StatsView() {
           onClick={() => setPeriodFilter('all')}
           className={`flex-1 py-1.5 text-xs font-medium rounded-xl transition-all ${
             periodFilter === 'all'
-              ? 'bg-emerald-500/20 text-emerald-300 shadow-sm border border-emerald-500/30'
-              : 'text-zinc-400 hover:text-zinc-200'
+              ? 'bg-card text-emerald-600 dark:text-emerald-300 dark:bg-emerald-500/20 shadow-sm border border-border/80 dark:border-emerald-500/30'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           Semua Riwayat
@@ -185,25 +174,25 @@ export function StatsView() {
 
       {/* 2. Top Summary KPI Cards */}
       <div className="grid grid-cols-2 gap-2.5">
-        <Card className="glass-card border-emerald-950/80 bg-[#0d1712]">
+        <Card className="glass-card border-border/80 dark:border-emerald-950/80 bg-card dark:bg-[#0d1712] shadow-sm">
           <CardContent className="p-3.5 flex flex-col gap-1">
-            <div className="flex items-center gap-1.5 text-zinc-400 text-[10px]">
-              <Calendar className="w-3 h-3 text-emerald-400" />
+            <div className="flex items-center gap-1.5 text-muted-foreground text-[10px]">
+              <Calendar className="w-3 h-3 text-emerald-500" />
               <span>Rata-rata Harian</span>
             </div>
-            <span className="text-sm font-bold text-white font-mono">
+            <span className="text-sm font-bold text-foreground font-mono">
               {formatRupiah(dailyAverage)}
             </span>
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-emerald-950/80 bg-[#0d1712]">
+        <Card className="glass-card border-border/80 dark:border-emerald-950/80 bg-card dark:bg-[#0d1712] shadow-sm">
           <CardContent className="p-3.5 flex flex-col gap-1">
-            <div className="flex items-center gap-1.5 text-zinc-400 text-[10px]">
-              <Flame className="w-3 h-3 text-rose-400" />
+            <div className="flex items-center gap-1.5 text-muted-foreground text-[10px]">
+              <Flame className="w-3 h-3 text-rose-500" />
               <span>Belanja Terbesar</span>
             </div>
-            <span className="text-sm font-bold text-white font-mono truncate">
+            <span className="text-sm font-bold text-foreground font-mono truncate">
               {topExpenses.length > 0
                 ? formatRupiah(Number(topExpenses[0].total || topExpenses[0].amount))
                 : 'Rp 0'}
@@ -214,13 +203,13 @@ export function StatsView() {
 
       {/* 3. Category Breakdown (Pie / Donut Chart) */}
       {categoryData.length > 0 && (
-        <Card className="glass-card border-emerald-950/80 bg-[#0d1712] overflow-hidden">
+        <Card className="glass-card border-border/80 dark:border-emerald-950/80 bg-card dark:bg-[#0d1712] overflow-hidden shadow-sm">
           <CardHeader className="p-4 pb-0 flex flex-row items-center justify-between">
-            <CardTitle className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
-              <PieIcon className="w-3.5 h-3.5 text-emerald-400" />
+            <CardTitle className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <PieIcon className="w-3.5 h-3.5 text-emerald-500" />
               Breakdown Kategori Pengeluaran
             </CardTitle>
-            <span className="text-[10px] text-zinc-400 font-mono">
+            <span className="text-[10px] text-muted-foreground font-mono">
               {formatRupiah(totalExpense)}
             </span>
           </CardHeader>
@@ -231,8 +220,9 @@ export function StatsView() {
                   <Tooltip
                     formatter={(value: any) => [formatRupiah(Number(value)), 'Nominal']}
                     contentStyle={{
-                      backgroundColor: '#0c1611',
-                      borderColor: 'rgba(16, 185, 129, 0.3)',
+                      backgroundColor: 'var(--card)',
+                      color: 'var(--foreground)',
+                      borderColor: 'var(--border)',
                       borderRadius: '12px',
                       fontSize: '11px',
                     }}
@@ -250,7 +240,7 @@ export function StatsView() {
                       <Cell
                         key={`cell-${index}`}
                         fill={CHART_COLORS[index % CHART_COLORS.length]}
-                        stroke="#0d1712"
+                        stroke="var(--card)"
                         strokeWidth={2}
                       />
                     ))}
@@ -260,17 +250,17 @@ export function StatsView() {
 
               {/* Center Donut Label */}
               <div className="absolute text-center pointer-events-none">
-                <span className="text-[9px] text-zinc-500 uppercase tracking-widest font-semibold block">
+                <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-semibold block">
                   Total
                 </span>
-                <span className="text-xs font-bold text-emerald-400 font-mono">
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                   {categoryData.length} Kat.
                 </span>
               </div>
             </div>
 
             {/* Category Legend list */}
-            <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-emerald-950/80">
+            <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-border/80 dark:border-emerald-950/80">
               {categoryData.slice(0, 5).map((cat, idx) => (
                 <div key={cat.name} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
@@ -278,15 +268,15 @@ export function StatsView() {
                       className="w-2.5 h-2.5 rounded-full shrink-0"
                       style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }}
                     />
-                    <span className="text-zinc-300 text-[11px] truncate max-w-[150px]">
+                    <span className="text-foreground text-[11px] truncate max-w-[150px]">
                       {cat.name}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 font-mono">
-                    <span className="text-zinc-400 text-[10px]">
+                    <span className="text-muted-foreground text-[10px]">
                       {cat.percent.toFixed(0)}%
                     </span>
-                    <span className="text-zinc-200 text-[11px] font-semibold">
+                    <span className="text-foreground text-[11px] font-semibold">
                       {formatRupiah(cat.value)}
                     </span>
                   </div>
@@ -299,13 +289,13 @@ export function StatsView() {
 
       {/* 4. Daily Trend Chart */}
       {trendData.length > 0 && (
-        <Card className="glass-card border-emerald-950/80 bg-[#0d1712]">
+        <Card className="glass-card border-border/80 dark:border-emerald-950/80 bg-card dark:bg-[#0d1712] shadow-sm">
           <CardHeader className="p-4 pb-0 flex flex-row items-center justify-between">
-            <CardTitle className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
-              <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
+            <CardTitle className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <BarChart3 className="w-3.5 h-3.5 text-emerald-500" />
               Tren Pengeluaran Harian
             </CardTitle>
-            <span className="text-[10px] text-zinc-400">7 Hari Aktif</span>
+            <span className="text-[10px] text-muted-foreground">7 Hari Aktif</span>
           </CardHeader>
           <CardContent className="p-4 pt-3">
             <div className="w-full h-36">
@@ -313,13 +303,13 @@ export function StatsView() {
                 <BarChart data={trendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <XAxis
                     dataKey="date"
-                    stroke="#52525b"
+                    stroke="var(--muted-foreground)"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="#52525b"
+                    stroke="var(--muted-foreground)"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
@@ -328,8 +318,9 @@ export function StatsView() {
                   <Tooltip
                     formatter={(value: any) => [formatRupiah(Number(value)), 'Pengeluaran']}
                     contentStyle={{
-                      backgroundColor: '#0c1611',
-                      borderColor: 'rgba(16, 185, 129, 0.3)',
+                      backgroundColor: 'var(--card)',
+                      color: 'var(--foreground)',
+                      borderColor: 'var(--border)',
                       borderRadius: '12px',
                       fontSize: '11px',
                     }}
@@ -345,26 +336,26 @@ export function StatsView() {
       {/* 5. Top 5 Spending Items */}
       {topExpenses.length > 0 && (
         <div className="flex flex-col gap-2">
-          <h3 className="text-xs font-semibold text-zinc-300 px-1">Top 5 Pengeluaran Terbesar</h3>
+          <h3 className="text-xs font-semibold text-foreground px-1">Top 5 Pengeluaran Terbesar</h3>
           <div className="flex flex-col gap-1.5">
             {topExpenses.map((exp, idx) => (
               <div
                 key={exp.id}
-                className="p-3 rounded-2xl bg-[#0d1712] border border-emerald-950/70 flex items-center justify-between"
+                className="p-3 rounded-2xl bg-card border border-border/80 dark:bg-[#0d1712] dark:border-emerald-950/70 flex items-center justify-between shadow-xs"
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="w-5 h-5 rounded-lg bg-zinc-800 text-zinc-300 font-mono text-[10px] flex items-center justify-center font-bold">
+                  <span className="w-5 h-5 rounded-lg bg-secondary text-foreground font-mono text-[10px] flex items-center justify-center font-bold">
                     #{idx + 1}
                   </span>
                   <div>
-                    <p className="text-xs font-semibold text-zinc-100 line-clamp-1">{exp.title}</p>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">
+                    <p className="text-xs font-semibold text-foreground line-clamp-1">{exp.title}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
                       {exp.category?.name || 'Lainnya'} • {exp.provider?.name || 'Cash'}
                     </p>
                   </div>
                 </div>
 
-                <span className="text-xs font-bold text-rose-400 font-mono">
+                <span className="text-xs font-bold text-rose-600 dark:text-rose-400 font-mono">
                   -{formatRupiah(Number(exp.total || exp.amount))}
                 </span>
               </div>

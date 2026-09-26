@@ -50,7 +50,6 @@ export function AIChatView() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Scroll ONLY the inner container directly without touching window/parent viewports
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
@@ -164,11 +163,11 @@ export function AIChatView() {
               <div
                 className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                   isUser
-                    ? 'bg-zinc-800 text-zinc-300'
-                    : 'text-emerald-400'
+                    ? 'bg-secondary text-muted-foreground'
+                    : 'text-emerald-500'
                 }`}
               >
-                {isUser ? <User className="w-3.5 h-3.5" /> : <Sparkles className="w-4 h-4 text-emerald-400" />}
+                {isUser ? <User className="w-3.5 h-3.5" /> : <Sparkles className="w-4 h-4 text-emerald-500" />}
               </div>
 
               <div
@@ -177,10 +176,10 @@ export function AIChatView() {
                 }`}
               >
                 <div
-                  className={`p-3 rounded-2xl text-xs leading-relaxed ${
+                  className={`p-3 rounded-2xl text-xs leading-relaxed shadow-sm ${
                     isUser
                       ? 'bg-emerald-600 text-white rounded-tr-none'
-                      : 'bg-[#0e1913] text-zinc-200 border border-emerald-950/80 rounded-tl-none shadow-sm'
+                      : 'bg-card text-foreground border border-border/80 dark:bg-[#0e1913] dark:border-emerald-950/80 rounded-tl-none'
                   }`}
                 >
                   {isUser ? (
@@ -192,13 +191,13 @@ export function AIChatView() {
 
                 {/* Interactive Transaction Confirmation Card inside chat */}
                 {msg.transaction && (
-                  <Card className="w-full glass-card border-emerald-500/30 bg-[#07130c] p-3 rounded-2xl space-y-2 animate-in zoom-in-95 duration-200">
+                  <Card className="w-full glass-card border border-border/80 dark:border-emerald-500/30 bg-card dark:bg-[#07130c] p-3 rounded-2xl space-y-2 animate-in zoom-in-95 duration-200 shadow-sm">
                     <div className="flex items-center justify-between">
                       <span
                         className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase flex items-center gap-1 ${
                           msg.transaction.type === 'income'
-                            ? 'bg-emerald-500/20 text-emerald-400'
-                            : 'bg-rose-500/20 text-rose-400'
+                            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400'
+                            : 'bg-rose-500/10 text-rose-600 border border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400'
                         }`}
                       >
                         {msg.transaction.type === 'income' ? (
@@ -211,34 +210,34 @@ export function AIChatView() {
                           </>
                         )}
                       </span>
-                      <span className="text-[10px] text-zinc-400">
+                      <span className="text-[10px] text-muted-foreground">
                         {msg.transaction.provider}
                       </span>
                     </div>
 
                     <div className="flex items-baseline justify-between pt-1">
-                      <h4 className="text-xs font-bold text-white line-clamp-1">
+                      <h4 className="text-xs font-bold text-foreground line-clamp-1">
                         {msg.transaction.title}
                       </h4>
                       <span
                         className={`text-sm font-black font-mono ml-2 ${
                           msg.transaction.type === 'income'
-                            ? 'text-emerald-400'
-                            : 'text-zinc-100'
+                            ? 'text-emerald-600 dark:text-emerald-400'
+                            : 'text-foreground'
                         }`}
                       >
                         {formatRupiah(msg.transaction.total)}
                       </span>
                     </div>
 
-                    <div className="text-[10px] text-zinc-400">
-                      Kategori: <strong className="text-zinc-300">{msg.transaction.category}</strong>
+                    <div className="text-[10px] text-muted-foreground">
+                      Kategori: <strong className="text-foreground">{msg.transaction.category}</strong>
                     </div>
 
                     {/* Action Button */}
                     {msg.isSaved ? (
-                      <div className="w-full py-1.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <div className="w-full py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 dark:bg-emerald-950/60 dark:border-emerald-500/40 text-emerald-600 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                         <span>Tersimpan di Aktivitas</span>
                       </div>
                     ) : (
@@ -246,7 +245,7 @@ export function AIChatView() {
                         size="sm"
                         disabled={savingId === msg.id}
                         onClick={() => handleSaveTransaction(msg.id, msg.transaction!)}
-                        className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs h-8 rounded-xl shadow-none flex items-center justify-center gap-1.5"
+                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-black font-bold text-xs h-8 rounded-xl shadow-none flex items-center justify-center gap-1.5"
                       >
                         {savingId === msg.id ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -266,14 +265,14 @@ export function AIChatView() {
         {/* Elegant Pulsing Dots Loader */}
         {isLoading && (
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-emerald-400">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-emerald-500">
+              <Sparkles className="w-4 h-4 text-emerald-500" />
             </div>
-            <div className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-[#0e1913] border border-emerald-950/80 rounded-tl-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.3s]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.15s]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" />
-              <span className="text-[11px] text-zinc-400 ml-1.5">Menjawab...</span>
+            <div className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-card border border-border/80 dark:bg-[#0e1913] dark:border-emerald-950/80 rounded-tl-none shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" />
+              <span className="text-[11px] text-muted-foreground ml-1.5">Menjawab...</span>
             </div>
           </div>
         )}
@@ -287,7 +286,7 @@ export function AIChatView() {
             type="button"
             disabled={isLoading}
             onClick={() => handleSendMessage(chip)}
-            className="text-[10px] px-2.5 py-1 rounded-lg bg-[#0e1913] border border-emerald-950 text-emerald-300 hover:border-emerald-500/40 shrink-0 whitespace-nowrap transition-colors"
+            className="text-[10px] px-2.5 py-1 rounded-lg bg-card border border-border/80 text-emerald-600 dark:bg-[#0e1913] dark:border-emerald-950 dark:text-emerald-300 hover:border-emerald-500/40 shrink-0 whitespace-nowrap transition-colors shadow-xs"
           >
             {chip}
           </button>
@@ -308,12 +307,12 @@ export function AIChatView() {
             onChange={(e) => setInput(e.target.value)}
             disabled={isLoading}
             placeholder="Tanya pengeluaran atau catat kilat..."
-            className="flex-1 bg-[#101c15] border border-emerald-950/80 rounded-2xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
+            className="flex-1 bg-card border border-border rounded-2xl px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground dark:bg-[#101c15] dark:border-emerald-950/80 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all shadow-xs"
           />
           <Button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black p-0 shrink-0 flex items-center justify-center shadow-none"
+            className="w-9 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-black p-0 shrink-0 flex items-center justify-center shadow-none"
           >
             <Send className="w-4 h-4" />
           </Button>

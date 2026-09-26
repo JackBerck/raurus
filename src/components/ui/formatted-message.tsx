@@ -19,14 +19,14 @@ export function FormattedMessage({ content }: FormattedMessageProps) {
     // Header formats (### Header)
     if (trimmed.startsWith('### ')) {
       return (
-        <h4 key={key} className="font-bold text-emerald-300 text-xs mt-1.5 mb-0.5">
+        <h4 key={key} className="font-bold text-emerald-600 dark:text-emerald-300 text-xs mt-1.5 mb-0.5">
           {trimmed.replace(/^###\s+/, '')}
         </h4>
       );
     }
     if (trimmed.startsWith('## ') || trimmed.startsWith('# ')) {
       return (
-        <h3 key={key} className="font-bold text-white text-xs mt-2 mb-0.5">
+        <h3 key={key} className="font-bold text-foreground text-xs mt-2 mb-0.5">
           {trimmed.replace(/^#+\s+/, '')}
         </h3>
       );
@@ -41,7 +41,7 @@ export function FormattedMessage({ content }: FormattedMessageProps) {
     const parsedNodes = parts.map((part, pIdx) => {
       if (part.startsWith('**') && part.endsWith('**')) {
         return (
-          <strong key={pIdx} className="font-semibold text-emerald-300">
+          <strong key={pIdx} className="font-semibold text-emerald-600 dark:text-emerald-300">
             {part.slice(2, -2)}
           </strong>
         );
@@ -52,14 +52,14 @@ export function FormattedMessage({ content }: FormattedMessageProps) {
     if (isBullet) {
       return (
         <div key={key} className="flex items-start gap-1.5 pl-1 my-0.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
-          <span className="flex-1 leading-relaxed text-zinc-200">{parsedNodes}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+          <span className="flex-1 leading-relaxed text-foreground">{parsedNodes}</span>
         </div>
       );
     }
 
     return (
-      <p key={key} className="leading-relaxed text-zinc-200">
+      <p key={key} className="leading-relaxed text-foreground">
         {parsedNodes}
       </p>
     );

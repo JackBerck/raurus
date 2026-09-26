@@ -152,18 +152,18 @@ export function ActivityView() {
     <div className="flex flex-col gap-3 p-4 animate-in fade-in duration-200">
       {/* 1. Search Bar */}
       <div className="relative">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari transaksi, kategori, atau metode..."
-          className="pl-9 bg-[#0d1611] border-emerald-950/80 text-xs h-9 rounded-xl focus-visible:ring-emerald-500"
+          className="pl-9 bg-card border-border text-foreground text-xs h-9 rounded-xl focus-visible:ring-emerald-500 shadow-sm"
         />
         {search && (
           <button
             type="button"
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-400 hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground hover:text-foreground"
           >
             Hapus
           </button>
@@ -185,8 +185,8 @@ export function ActivityView() {
               onClick={() => setTypeFilter(f.id as any)}
               className={`px-3 py-1 text-xs rounded-xl font-medium transition-all ${
                 active
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
-                  : 'bg-[#0e1712] text-zinc-400 border border-emerald-950/60 hover:text-zinc-200'
+                  ? 'bg-card text-emerald-600 dark:text-emerald-300 dark:bg-emerald-500/20 border border-border dark:border-emerald-500/40 shadow-sm'
+                  : 'bg-secondary text-muted-foreground border border-border/80 hover:text-foreground'
               }`}
             >
               {f.label}
@@ -197,24 +197,24 @@ export function ActivityView() {
 
       {/* 3. Transaction Grouped List */}
       {isLoading ? (
-        <Card className="glass-card border-emerald-950/80 bg-[#0b130e]">
-          <CardContent className="p-8 text-center text-zinc-400 text-xs flex flex-col items-center gap-2">
-            <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
+        <Card className="glass-card border-border/80 dark:border-emerald-950/80 bg-card dark:bg-[#0b130e]">
+          <CardContent className="p-8 text-center text-muted-foreground text-xs flex flex-col items-center gap-2">
+            <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
             <p>Memuat riwayat transaksi...</p>
           </CardContent>
         </Card>
       ) : grouped.length === 0 ? (
-        <Card className="glass-card border-emerald-950/80 bg-[#0b130e]">
-          <CardContent className="p-8 text-center text-zinc-400 text-xs flex flex-col items-center gap-2.5">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+        <Card className="glass-card border-border/80 dark:border-emerald-950/80 bg-card dark:bg-[#0b130e]">
+          <CardContent className="p-8 text-center text-muted-foreground text-xs flex flex-col items-center gap-2.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <ReceiptText className="w-6 h-6" />
             </div>
-            <p className="font-medium text-zinc-200">
+            <p className="font-medium text-foreground">
               {search || typeFilter !== 'all'
                 ? 'Tidak ada transaksi yang cocok'
                 : 'Belum Ada Riwayat Transaksi'}
             </p>
-            <p className="text-zinc-500 max-w-[240px]">
+            <p className="text-muted-foreground max-w-[240px]">
               Gunakan tombol tengah ✦ untuk mulai mencatat transaksi harian Anda.
             </p>
           </CardContent>
@@ -224,10 +224,10 @@ export function ActivityView() {
           {grouped.map((group) => (
             <div key={group.title} className="flex flex-col gap-2">
               <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                   {group.title}
                 </span>
-                <span className="text-[10px] text-zinc-500 font-mono">
+                <span className="text-[10px] text-muted-foreground font-mono">
                   {group.items.length} item
                 </span>
               </div>
@@ -242,23 +242,23 @@ export function ActivityView() {
                     <div
                       key={tx.id}
                       onClick={() => handleOpenDetail(tx)}
-                      className="p-3 rounded-2xl bg-[#0d1712] border border-emerald-950/70 hover:border-emerald-500/30 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]"
+                      className="p-3 rounded-2xl bg-card border border-border/80 hover:border-emerald-500/30 dark:bg-[#0d1712] dark:border-emerald-950/70 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] shadow-sm"
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                             isIncome
-                              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                              : 'bg-zinc-800/60 text-zinc-300 border border-zinc-700/40'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400 border border-emerald-500/20'
+                              : 'bg-secondary text-muted-foreground border border-border/80'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-zinc-100 line-clamp-1">
+                          <p className="text-xs font-semibold text-foreground line-clamp-1">
                             {tx.title}
                           </p>
-                          <p className="text-[10px] text-zinc-400 mt-0.5">
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
                             {categoryName} • {tx.provider?.name || 'Cash'} • {formatTime(tx.occurred_at)}
                           </p>
                         </div>
@@ -267,7 +267,7 @@ export function ActivityView() {
                       <div className="text-right">
                         <p
                           className={`text-xs font-bold font-mono ${
-                            isIncome ? 'text-emerald-400' : 'text-zinc-100'
+                            isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'
                           }`}
                         >
                           {isIncome ? '+' : '-'}
@@ -285,14 +285,14 @@ export function ActivityView() {
 
       {/* 4. Transaction Detail & Edit Modal Dialog */}
       <Dialog open={!!selectedTx} onOpenChange={(open) => !open && setSelectedTx(null)}>
-        <DialogContent className="bg-[#09110d] border border-emerald-500/30 text-zinc-100 rounded-3xl max-w-sm mx-auto p-5 focus:outline-none">
+        <DialogContent className="bg-card border border-border dark:bg-[#09110d] dark:border-emerald-500/30 text-foreground rounded-3xl max-w-sm mx-auto p-5 focus:outline-none shadow-xl">
           <DialogHeader className="text-left space-y-1">
             <div className="flex items-center justify-between">
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${
                   (isEditing ? editType : selectedTx?.type) === 'income'
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                    ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400'
+                    : 'bg-rose-500/10 text-rose-600 border border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400'
                 }`}
               >
                 {(isEditing ? editType : selectedTx?.type) === 'income' ? 'Pemasukan' : 'Pengeluaran'}
@@ -301,16 +301,16 @@ export function ActivityView() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditing(!isEditing)}
-                className="text-xs text-emerald-400 hover:text-emerald-300 h-7 px-2"
+                className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 h-7 px-2"
               >
                 <Pencil className="w-3.5 h-3.5 mr-1" />
                 {isEditing ? 'Batal Edit' : 'Edit'}
               </Button>
             </div>
-            <DialogTitle className="text-base font-bold text-white mt-1">
+            <DialogTitle className="text-base font-bold text-foreground mt-1">
               {isEditing ? 'Edit Transaksi' : selectedTx?.title}
             </DialogTitle>
-            <DialogDescription className="text-xs text-zinc-400">
+            <DialogDescription className="text-xs text-muted-foreground">
               {isEditing ? 'Sesuaikan rincian transaksi' : 'Rincian transaksi keuangan'}
             </DialogDescription>
           </DialogHeader>
@@ -318,11 +318,11 @@ export function ActivityView() {
           {selectedTx && !isEditing ? (
             /* VIEW MODE */
             <div className="flex flex-col gap-3 mt-2">
-              <div className="p-3.5 rounded-2xl bg-[#0f1b14] border border-emerald-950 flex flex-col items-center justify-center">
-                <span className="text-[10px] text-zinc-400">Nominal Total</span>
+              <div className="p-3.5 rounded-2xl bg-secondary/60 dark:bg-[#0f1b14] border border-border/80 dark:border-emerald-950 flex flex-col items-center justify-center">
+                <span className="text-[10px] text-muted-foreground">Nominal Total</span>
                 <span
                   className={`text-2xl font-black font-mono mt-0.5 ${
-                    selectedTx.type === 'income' ? 'text-emerald-400' : 'text-white'
+                    selectedTx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'
                   }`}
                 >
                   {selectedTx.type === 'income' ? '+' : '-'}
@@ -330,28 +330,28 @@ export function ActivityView() {
                 </span>
               </div>
 
-              <div className="divide-y divide-emerald-950/60 text-xs">
+              <div className="divide-y divide-border/80 dark:divide-emerald-950/60 text-xs">
                 <div className="py-2 flex items-center justify-between">
-                  <span className="text-zinc-400 flex items-center gap-1.5">
-                    <Tag className="w-3.5 h-3.5 text-emerald-400" /> Kategori
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <Tag className="w-3.5 h-3.5 text-emerald-500" /> Kategori
                   </span>
-                  <span className="text-zinc-200 font-medium">
+                  <span className="text-foreground font-medium">
                     {selectedTx.category?.name || 'Lainnya'}
                   </span>
                 </div>
                 <div className="py-2 flex items-center justify-between">
-                  <span className="text-zinc-400 flex items-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-emerald-400" /> Metode Bayar
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-emerald-500" /> Metode Bayar
                   </span>
-                  <span className="text-zinc-200 font-medium">
+                  <span className="text-foreground font-medium">
                     {selectedTx.provider?.name || 'Cash'}
                   </span>
                 </div>
                 <div className="py-2 flex items-center justify-between">
-                  <span className="text-zinc-400 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-emerald-400" /> Tanggal
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-500" /> Tanggal
                   </span>
-                  <span className="text-zinc-200 font-medium">
+                  <span className="text-foreground font-medium">
                     {new Date(selectedTx.occurred_at).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'long',
@@ -362,10 +362,10 @@ export function ActivityView() {
 
                 {selectedTx.raw_input && (
                   <div className="py-2 flex flex-col gap-1">
-                    <span className="text-zinc-400 flex items-center gap-1.5 text-[11px]">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Input Teks Asli AI
+                    <span className="text-muted-foreground flex items-center gap-1.5 text-[11px]">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-500" /> Input Teks Asli AI
                     </span>
-                    <span className="text-[11px] text-zinc-300 italic bg-[#0c1510] p-2 rounded-xl border border-emerald-950">
+                    <span className="text-[11px] text-foreground italic bg-secondary/50 dark:bg-[#0c1510] p-2 rounded-xl border border-border/80 dark:border-emerald-950">
                       &quot;{selectedTx.raw_input}&quot;
                     </span>
                   </div>
@@ -377,7 +377,7 @@ export function ActivityView() {
                 <Button
                   variant="outline"
                   onClick={() => setIsEditing(true)}
-                  className="bg-[#0f1b14] border-emerald-950 hover:bg-emerald-950/40 text-emerald-300 text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
+                  className="bg-card border-border hover:bg-secondary text-foreground text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   <span>Edit Data</span>
@@ -386,7 +386,7 @@ export function ActivityView() {
                 <Button
                   variant="destructive"
                   onClick={() => setConfirmDelete(true)}
-                  className="bg-rose-950/60 hover:bg-rose-900 border border-rose-500/30 text-rose-300 text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
+                  className="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:bg-rose-950/60 dark:hover:bg-rose-900 dark:text-rose-300 text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Hapus</span>
@@ -397,14 +397,14 @@ export function ActivityView() {
             /* EDIT MODE */
             <div className="flex flex-col gap-3 mt-2 animate-in fade-in duration-150">
               {/* Type Switcher */}
-              <div className="grid grid-cols-2 gap-2 bg-[#0d1712] p-1 rounded-xl border border-emerald-950">
+              <div className="grid grid-cols-2 gap-2 bg-secondary/80 dark:bg-[#0d1712] p-1 rounded-xl border border-border dark:border-emerald-950">
                 <button
                   type="button"
                   onClick={() => setEditType('expense')}
                   className={`py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${
                     editType === 'expense'
-                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                      : 'text-zinc-400'
+                      ? 'bg-rose-500/15 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-500/30 shadow-sm'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -415,8 +415,8 @@ export function ActivityView() {
                   onClick={() => setEditType('income')}
                   className={`py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${
                     editType === 'income'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                      : 'text-zinc-400'
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-500/30 shadow-sm'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   <ArrowDownLeft className="w-3.5 h-3.5" />
@@ -426,41 +426,41 @@ export function ActivityView() {
 
               {/* Title */}
               <div className="space-y-1">
-                <label className="text-[11px] text-zinc-400 font-medium">Judul Transaksi</label>
+                <label className="text-[11px] text-muted-foreground font-medium">Judul Transaksi</label>
                 <Input
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl"
+                  className="bg-background border-border text-foreground text-xs h-9 rounded-xl"
                 />
               </div>
 
               {/* Amount */}
               <div className="space-y-1">
-                <label className="text-[11px] text-zinc-400 font-medium">Nominal (Rp)</label>
+                <label className="text-[11px] text-muted-foreground font-medium">Nominal (Rp)</label>
                 <Input
                   type="number"
                   value={editAmount}
                   onChange={(e) => setEditAmount(parseFloat(e.target.value) || 0)}
-                  className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl font-mono"
+                  className="bg-background border-border text-foreground text-xs h-9 rounded-xl font-mono"
                 />
               </div>
 
               {/* Category & Provider */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[11px] text-zinc-400 font-medium">Kategori</label>
+                  <label className="text-[11px] text-muted-foreground font-medium">Kategori</label>
                   <Input
                     value={editCategory}
                     onChange={(e) => setEditCategory(e.target.value)}
-                    className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl"
+                    className="bg-background border-border text-foreground text-xs h-9 rounded-xl"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] text-zinc-400 font-medium">Metode / Akun</label>
+                  <label className="text-[11px] text-muted-foreground font-medium">Metode / Akun</label>
                   <Input
                     value={editProvider}
                     onChange={(e) => setEditProvider(e.target.value)}
-                    className="bg-[#0f1b14] border-emerald-950 text-xs h-9 rounded-xl"
+                    className="bg-background border-border text-foreground text-xs h-9 rounded-xl"
                   />
                 </div>
               </div>
@@ -469,7 +469,7 @@ export function ActivityView() {
               <Button
                 disabled={isUpdating || !editTitle.trim() || editAmount <= 0}
                 onClick={handleSaveEdit}
-                className="w-full mt-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs h-10 rounded-xl flex items-center justify-center gap-1.5"
+                className="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs h-10 rounded-xl flex items-center justify-center gap-1.5"
               >
                 {isUpdating ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -485,12 +485,12 @@ export function ActivityView() {
 
       {/* 5. Alert Dialog Confirmation for Deletion */}
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent className="bg-[#09110d] border border-rose-500/30 text-zinc-100 rounded-3xl max-w-xs mx-auto p-5">
+        <AlertDialogContent className="bg-card border border-rose-500/30 text-foreground rounded-3xl max-w-xs mx-auto p-5 shadow-xl">
           <AlertDialogHeader className="text-left space-y-1">
-            <AlertDialogTitle className="text-sm font-bold text-white">
+            <AlertDialogTitle className="text-sm font-bold text-foreground">
               Hapus Transaksi?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-xs text-zinc-400">
+            <AlertDialogDescription className="text-xs text-muted-foreground">
               Apakah Anda yakin ingin menghapus catatan &quot;{selectedTx?.title}&quot;? Tindakan ini tidak dapat dibatalkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -498,7 +498,7 @@ export function ActivityView() {
             <AlertDialogCancel
               disabled={isDeleting}
               onClick={() => setConfirmDelete(false)}
-              className="bg-[#0f1b14] border-emerald-950 text-xs text-zinc-300 h-9 rounded-xl hover:bg-emerald-950/30"
+              className="bg-secondary border-border text-xs text-foreground h-9 rounded-xl hover:bg-accent"
             >
               Batal
             </AlertDialogCancel>
